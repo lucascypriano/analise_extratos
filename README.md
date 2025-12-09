@@ -1,6 +1,6 @@
 # Analise de Extratos
 
-Este repositório compara dois arquivos Excel: um extrato bancario (`arquivos/Extrato_Banco.xlsx`) e a saida do sistema (`arquivos/Extrato_Britech.xlsx`). O objetivo e listar discrepancias de PU cuja diferenca absoluta seja maior que `1e-6`.
+Este repositÃ³rio compara dois arquivos Excel: um extrato bancario (`arquivos/Extrato_Banco.xlsx`) e a saida do sistema (`arquivos/Extrato_Britech.xlsx`). O objetivo e listar discrepancias de PU cuja diferenca absoluta seja maior que `1e-6`.
 
 ## Como funciona
 - `analise.py` carrega os dois Excel (cabecalhos ajustados) e extrai quantidade, datas e PU/valor.
