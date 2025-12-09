@@ -1,0 +1,20 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+.env/
+.venv/
+
+# IDE
+.idea/
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# Local data
+arquivos/
