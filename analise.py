@@ -25,33 +25,49 @@ def analisar_incon(extrado_sistema, extrado_banco):
     df_sistema = pd.read_excel(extrado_sistema, header=4)
     df_banco = pd.read_excel(extrado_banco, header=22)
 
-    valores_banco = extrair_valores_banco(df_banco, extrado_banco)
-    valores_sistema = extrair_valores_sistema(df_sistema, extrado_sistema)
-    lista_inconsistencia = []
+    lista_banco = extrair_valores_banco(df_banco, extrado_banco)
+    lista_sistema = extrair_valores_sistema(df_sistema, extrado_sistema)
 
-    TOL = 1e-6  # tolerância
-    for vbi in valores_banco:
-        indici_banco = vbi['indici']
+    df_b = pd.DataFrame(lista_banco)
+    df_s = pd.DataFrame(lista_sistema)
 
-        for vsi in valores_sistema:
-            indici_sistema = vsi['indici']
-            if indici_banco == indici_sistema:
-                pu_sistema = vsi['pu_sistema']
-                break
+    df_merged = df_s.merge(df_b, on="indici", how="left")
 
-        dif = abs(vbi['Pu_banco'] - pu_sistema)
+    inconsistentes = []
+    nao_casou = []
 
-        if dif > TOL:
-            lista_inconsistencia.append(
+    tol = 1e-6
+    for _, row in df_merged.iterrows():
+        pu_s = row["pu_sistema"]
+        pu_b = row["Pu_banco"]
+
+        if pd.isna(pu_b):
+            # não encontrou correspondente no banco
+            nao_casou.append(
                 {
-                    'codigo_investimento': vbi['Codigo'],
-                    'PU_Sistema': pu_sistema,
-                    'PU_Banco': vbi['Pu_banco'],
-                    'Valor_inconsistencias': dif,
+                    "indici": row["indici"],
+                    "codigo_investimento": row.get("codigo_investimento"),
+                    "PU_Sistema": pu_s,
+                    "PU_Banco": None,
                 }
             )
+        else:
+            diff = abs(pu_s - pu_b)
+            if diff > tol:
+                inconsistentes.append(
+                    {
+                        "indici": row["indici"],
+                        "codigo_investimento": row.get("codigo_investimento"),
+                        "PU_Sistema": pu_s,
+                        "PU_Banco": pu_b,
+                        "Valor_inconsistencias": diff,
+                    }
+                )
 
-    return lista_inconsistencia
+    return inconsistentes, nao_casou
+
+
+    return lista_inconsistencia, lista_nao_encontrados
 
 
 extrato_Banco = "Extrato_Banco.xlsx"
@@ -64,8 +80,12 @@ if extrato_Banco_find and extrato_Sistema_find:
     extrado_banco = r"./arquivos/Extrato_Banco.xlsx"
     extrado_sistema = r"./arquivos/Extrato_Britech.xlsx"
 
-    resu = analisar_incon(extrado_sistema, extrado_banco)
-    pprint(resu)
+    resu_inco, resu_nc = analisar_incon(extrado_sistema, extrado_banco)
+    print("Valores inconsistentes")
+    print(pd.DataFrame(resu_inco))
+    print('Valores não correlacionados')
+    print(pd.DataFrame(resu_nc))
+
 
 else:
     print("Ambos os arquivos precisam estar presente")
