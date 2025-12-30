@@ -67,9 +67,6 @@ def analisar_incon(extrado_sistema, extrado_banco):
     return inconsistentes, nao_casou
 
 
-    return lista_inconsistencia, lista_nao_encontrados
-
-
 extrato_Banco = "Extrato_Banco.xlsx"
 extrato_Sistema = "Extrato_Britech.xlsx"
 extrato_Banco_find = buscar_arquivo(extrato_Banco)
